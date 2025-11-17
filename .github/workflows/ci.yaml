@@ -19,11 +19,11 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Install dependencies (root)
+      - name: Install dependencies (server)
         working-directory: ./server
         run: npm install
 
-      - name: Build root project
+      - name: Build server project
         working-directory: ./server
         run: npm run build
 
