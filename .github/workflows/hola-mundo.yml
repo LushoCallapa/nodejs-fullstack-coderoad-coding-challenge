@@ -1,10 +1,13 @@
 name: Hola mundo Pipeline
 
 on:
-  push:
-    branches: [ main, dev ]
-  pull_request:
-    branches: [ main, dev ]
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: "Selecciona la rama a ejecutar"
+        required: true
+        default: "main"
+        type: string
 
 jobs:
   build:
@@ -13,6 +16,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.branch }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -21,4 +26,3 @@ jobs:
 
       - name: Run Hola Mundo Script
         run: python hola_mundo.py
-        
