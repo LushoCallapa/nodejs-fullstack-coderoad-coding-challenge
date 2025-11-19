@@ -37,7 +37,7 @@ async function writeDB(data: Database): Promise<void> {
 
 // list items
 app.get('/api/items', async (req: Request, res: Response): Promise<void> => {
-  res.json({coderoad: 'rocks🚀'})
+  res.json({coderoad: 'rocks🚀',mojix: 'Roadxd'})
   // PUT YOUR CODE HERE
 });
 
