@@ -10,10 +10,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Code
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Copy backend folder
+      - name: Copy backend folder to EC2
         uses: appleboy/scp-action@v1
         with:
           host: ${{ secrets.EC2_HOST }}
@@ -22,20 +22,59 @@ jobs:
           source: "server/"
           target: "/home/${{ secrets.EC2_USER }}/backend"
 
-      - name: Run backend on EC2
+      - name: Install, build and run backend
         uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_KEY }}
           script: |
+            #!/bin/bash
+            set -e
+
             cd /home/${{ secrets.EC2_USER }}/backend
-            npm install
-            npm run build
+
+            echo "Checking Node.js installation..."
+            if ! command -v node &> /dev/null
+            then
+              echo "Node.js not found. Installing Node.js..."
+              curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+              sudo apt-get install -y nodejs
+            else
+              echo "Node.js already installed: $(node -v)"
+            fi
+
+            echo "Checking npm..."
+            if ! command -v npm &> /dev/null
+            then
+              echo "npm not found. Please check Node.js installation."
+              exit 1
+            else
+              echo "npm version: $(npm -v)"
+            fi
+
+            echo "Checking PM2 installation..."
             if ! command -v pm2 &> /dev/null
             then
+              echo "PM2 not found. Installing PM2..."
               sudo npm install -g pm2
+            else
+              echo "PM2 already installed: $(pm2 -v)"
             fi
+
+            echo "Installing project dependencies..."
+            npm install
+
+            echo "Building TypeScript project..."
+            npm run build
+
+            echo "Stopping previous backend process (if exists)..."
             pm2 delete backend || true
+
+            echo "Starting backend with PM2..."
             pm2 start dist/server.js --name backend
+
+            echo "Saving PM2 process list..."
             pm2 save
+
+            echo "Deployment finished successfully!"
