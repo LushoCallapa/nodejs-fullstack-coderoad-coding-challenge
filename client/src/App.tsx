@@ -1,6 +1,6 @@
 import { useEffect, useState, FormEvent, ChangeEvent } from 'react'
 
-const API = 'http://100.28.124.150:4000/api'
+const API = 'http://44.223.37.216:4000/api'
 
 interface Item {
   id: number
