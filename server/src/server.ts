@@ -18,7 +18,7 @@ const app: Application = express();
 const PORT: number = parseInt(process.env.PORT || '4000', 10);
 const DB_PATH: string = path.join(__dirname, '..', 'db.json');
 app.use(cors({
-  origin: 'http://100.28.124.150:3000',
+  origin: 'http://44.223.37.216:3000',
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true
 }));
